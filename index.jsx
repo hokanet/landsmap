@@ -25,7 +25,7 @@ class LatestCommitComponent extends React.Component {
     // Replace this with your own repo
     // https://api.github.com/repos/:owner/:repo/branches/master
     fetch(
-      "https://api.github.com/repos/hokanet/landsmap/branches/gh-pages"
+      "https://api.github.com/repos/hokanet/landsmap/branches/main"
     )
       .then(response => {
         response.json().then(json => {
