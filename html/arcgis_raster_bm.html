@@ -1,0 +1,129 @@
+<!--//ArcGIS JS API 3 (Using HK1980 Grid ArcGIS Raster Tile Service)
+This JavaScript sample is built using ArcGIS API for JavaScript library. -->
+<!DOCTYPE html>
+<html>
+	<meta charset="utf-8">
+	<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
+    <title>ArcGIS API v3.33 for JS in Raster Tile Basemap (HK80)</title>
+
+	<link rel="stylesheet" href="https://js.arcgis.com/3.33/dijit/themes/nihilo/nihilo.css">
+	<link rel="stylesheet" href="https://js.arcgis.com/3.33/esri/css/esri.css">
+
+    <style>
+      html,body,#map-area {
+        //height: 100%;
+        //width: 100%;
+        margin: 2;
+        padding: 2;
+      }
+
+      #landsdlogo {
+        display: inline-block;
+        vertical-align: bottom;
+        width: 25px;
+        height: 25px;
+        background: url(https://mapapis01.blob.core.windows.net/images/landsdlogo.jpg);
+        background-repeat: no-repeat;
+        background-size: 25px 25px;
+      }
+
+      .esriAttribution {
+        background: transparent;
+      }
+    </style>
+  </head>
+
+  <body>
+    <script src="https://js.arcgis.com/3.33/"></script>
+    <div id="map-area"></div>
+    <div id="landsdlogo" class="landsdlogo"></div>
+
+    <script>
+      // resize map
+      const mapdiv = window["map-area"];
+      var margin;
+      if (document.all) {
+        margin =
+          parseInt(document.body.currentStyle.marginTop, 10) +
+          parseInt(document.body.currentStyle.marginBottom, 10);
+      } else {
+        margin =
+          parseInt(
+            document.defaultView
+              .getComputedStyle(document.body, "")
+              .getPropertyValue("margin-top")
+          ) +
+          parseInt(
+            document.defaultView
+              .getComputedStyle(document.body, "")
+              .getPropertyValue("margin-bottom")
+          );
+      }
+      mapdiv.style.height = window.innerHeight - margin + "px";
+
+      /////
+      var map;
+      //API starter key
+      //var apikey = '584b2fa686f14ba283874318b3b8d6b0';
+      //landsd.azure-api.net starter key
+      //var apikey = "f4d3e21d4fc14954a1d5930d4dde3809";
+      //PlanD test key
+      var apikey = "a5ce32f456ad45db98ff08089fed7153";
+	  
+	  var basemapRTURL = "https://api.hkmapservice.gov.hk/ags/map/basemap/HK80"
+
+      require([
+        "dojo/dom",
+        "esri/layers/ArcGISTiledMapServiceLayer",
+		"esri/basemaps"
+        "esri/SpatialReference",
+        "esri/geometry/Point",
+        "esri/map",
+        "dojo/_base/json",
+        "dojo/domReady!"
+      ], function (
+        dom,
+        ArcGISTiledMapServiceLayer,
+		basemap,
+        SpatialReference,
+        Point,
+        Map
+      ) {
+   
+
+        var bLayer = new ArcGISTiledMapServiceLayer(
+          "https://api.hkmapservice.gov.hk/ags/map/basemap/HK80?key=" + apikey,
+          { showAttribution: true }
+        );
+
+        var bLabelLayer = new ArcGISTiledMapServiceLayer(
+          "https://api.hkmapservice.gov.hk/ags/map/label-tc/HK80?key=" + apikey
+        );
+		
+		esriBasemaps.LandsDRT = {baseMapLayers: [{url: basemapRTURL + "/resources/styles/root.json",type: "VectorTile"}]
+		
+        var _map = new Map("map-area", {
+          center: new Point(
+            823100,
+            831200,
+            new SpatialReference({ wkid: 2326 })
+          ),
+          showAttribution: true,
+          zoom: 11,
+          minZoom: 10,
+          maxZoom: 20
+        });
+
+        _map.addLayer(bLayer);
+        _map.addLayer(bLabelLayer);
+
+        _map.on("load", function (event) {
+          const attr = document.getElementsByClassName("esriAttribution")[0];
+          if (attr) {
+            attr.parentNode.insertBefore(landsdlogo, attr.nextSibling);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
