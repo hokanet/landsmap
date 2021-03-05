@@ -5,22 +5,36 @@ This JavaScript sample is built using ArcGIS API for JavaScript library. -->
 <html>
   <head>
     <meta charset="utf-8" />
-	<meta name="viewport" content="initial-scale=1, maximum-scale=1,user-scalable=no">
-    <title>ArcGIS API v3.33 for JS in WMS (HK80)</title>
+    <metaname
+      ="viewport"
+      content="initial-scale=1, maximum-scale=1,user-scalable=no"
+    />
+    <title>ArcGIS API v3.33 for JS in Map Service (HK80)</title>
 
-   	<link rel="stylesheet" href="https://js.arcgis.com/3.33/dijit/themes/nihilo/nihilo.css">
-	<link rel="stylesheet" href="https://js.arcgis.com/3.33/esri/css/esri.css">
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/3.33/dijit/themes/nihilo/nihilo.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/3.33/esri/css/esri.css"
+    />
 
     <style>
       html,
-	  body,
-	  #map-area {
+      body,
+      #map-area {
         height: 100%;
         width: 100%;
         margin: 2;
         padding: 2;
       }
 
+      .logo-med {
+        width: 46px;
+        height: 22px;
+        background-image: url(https://js.arcgis.com/3.20/esri/images/map/logo-sm.png);
+      }
 
       #landsdlogo {
         display: inline-block;
@@ -39,27 +53,36 @@ This JavaScript sample is built using ArcGIS API for JavaScript library. -->
   </head>
 
   <body class="nihilo">
-    <div id="mainWindow" style="width: 100%; height: 100%; margin: 0;">
-		<div id="map-area"></div>
-		<div id="landsdlogo" class="landsdlogo"></div>
-	</div>
+    <div id="map-area"></div>
+    <div id="landsdlogo" class="landsdlogo"></div>
 
-	
-	<script src="https://js.arcgis.com/3.33/"></script>
+    <script src="https://js.arcgis.com/3.33/"></script>
     <script>
       // resize map
-      const mapdiv = window['map-area'];
-	  var margin;
-	  if (document.all) {
-		margin = parseInt(document.body.currentStyle.marginTop, 10) + parseInt(document.body.currentStyle.marginBottom, 10);
-		} else {
-		margin = parseInt(document.defaultView.getComputedStyle(document.body, '').getPropertyValue('margin-top')) + parseInt(document.defaultView.getComputedStyle(document.body, '').getPropertyValue('margin-bottom'));
-		}
-	  mapdiv.style.height = (window.innerHeight - margin) + 'px';
-
+      const mapdiv = window["map-area"];
+      var margin;
+      if (document.all) {
+        margin =
+          parseInt(document.body.currentStyle.marginTop, 10) +
+          parseInt(document.body.currentStyle.marginBottom, 10);
+      } else {
+        margin =
+          parseInt(
+            document.defaultView
+              .getComputedStyle(document.body, "")
+              .getPropertyValue("margin-top")
+          ) +
+          parseInt(
+            document.defaultView
+              .getComputedStyle(document.body, "")
+              .getPropertyValue("margin-bottom")
+          );
+      }
+      mapdiv.style.height = window.innerHeight - margin + "px";
 
       /////
-      var map;
+      //var map;
+
       //API starter key
       //var apikey = '584b2fa686f14ba283874318b3b8d6b0';
       //landsd.azure-api.net starter key
@@ -68,49 +91,22 @@ This JavaScript sample is built using ArcGIS API for JavaScript library. -->
       var apikey = "a5ce32f456ad45db98ff08089fed7153";
 
       require([
-        "dojo/dom",
-        //"esri/symbols/PictureMarkerSymbol",
-        //"esri/InfoTemplate",
-        "esri/layers/ArcGISDynamicMapServiceLayer",
-		"esri/layers/ImageParameters",
-        "esri/SpatialReference",
-        "esri/geometry/Point",
-        //"esri/dijit/Popup",
-        //"esri/dijit/PopupTemplate",
-        //"esri/layers/FeatureLayer",
         "esri/map",
-        //"esri/dijit/Scalebar",
-        //"dijit/layout/BorderContainer",
-        //"dijit/layout/ContentPane",
-        //"dijit/TitlePane",
-        //"dijit/form/CheckBox",
-        //"dojo/_base/json",
-        "dojo/domReady!"
+        "esri/layers/ArcGISDynamicMapServiceLayer",
+        "esri/layers/ImageParameters",
+        "esri/geometry/Point",
+        "esri/SpatialReference"
       ], function (
-        dom,
-        //PictureMarkerSymbol,
-        //InfoTemplate,
+        Map,
         ArcGISDynamicMapServiceLayer,
-		ImageParameters,
-        SpatialReference,
+        ImageParameters,
         Point,
-        //Popup,
-        //PopupTemplate,
-        //FeatureLayer,
-        Map
-        //Scalebar
+        SpatialReference
       ) {
-		
-		//var attrib = new Attribution({map:_map},"attributionDiv");
-		//attrib.itemDelimiter = ",";
-		//attrib.itemNodes = "itemNodes";
-		//attrib.startup(); 
-   
-
         var _map = new Map("map-area", {
           center: new Point(
-            823100,
-            831200,
+            839600,
+            817000,
             new SpatialReference({ wkid: 2326 })
           ),
           showAttribution: true,
@@ -118,73 +114,72 @@ This JavaScript sample is built using ArcGIS API for JavaScript library. -->
           minZoom: 10,
           maxZoom: 19
         });
-		
-		var imageParameters = new ImageParameters();
-		imageParameters.format= "png24";
-		
-		
-		var mIndex = new ArcGISDynamicMapServiceLayer(
+
+        var imageParameters = new ImageParameters();
+        imageParameters.format = "png24"; //set the image type to PNG24, note default is PNG8.
+
+        //Takes a URL to a non cached map service.
+        var bMi = new ArcGISDynamicMapServiceLayer(
           "https://api.hkmapservice.gov.hk/ags/map/layer/mi?key=" + apikey,
-          { showAttribution: true, 
-		  opacity : 1.0,
-		  maxScale: 25000,
-          ImageParameters:imageParameters
-		  }
-        );
-		
-		//var layerDefs=[]; 
-		//layerDefs[0] = "name='Building'";
-		//layerDefs[1] = "name='Site'";
-		//layerDefs[2] = "name='SubSite'";
-		//imageParameters.layerDefinitions = layerDefs;
-        //imageParameters.layerIds = [2];
-        //imageParameters.layerOption = ImageParameters.LAYER_OPTION_SHOW;
-        //imageParameters.transparent = true;
-
-		
-		var bLayerBldg = new ArcGISDynamicMapServiceLayer(
-          "https://api.hkmapservice.gov.hk/ags/map/layer/ib1000/buildings?key=" + apikey,
-          { showAttribution: true, 
-		  //skip id: show all options
-		  //id:"Building",
-		  opacity : 1.0,
-		  minScale: 15000,
-		  ImageParameters:imageParameters
-		  }
-        );
-		
-		var bLayerUt = new ArcGISDynamicMapServiceLayer(
-          "https://api.hkmapservice.gov.hk/ags/map/layer/ib1000/utilities?key=" + apikey,
-          { showAttribution: true, 
-		  opacity : 1.0,
-		  minScale: 5000,
-		  ImageParameters:imageParameters
-		  }
-        );
-		
-		var bLayerTspt = new ArcGISDynamicMapServiceLayer(
-          "https://api.hkmapservice.gov.hk/ags/map/layer/ib1000/transportation?key=" + apikey,
-          { showAttribution: true, 
-		  opacity : 1.0,
-		  minScale: 25000,
-		  ImageParameters:imageParameters
-		  }
-        );
-        
-		_map.addLayer(mIndex);
-        _map.addLayer(bLayerBldg);
-		_map.addLayer(bLayerUt);
-		_map.addLayer(bLayerTspt);
-
-        _map.on("load", function (event) {
-          const attr = document.getElementsByClassName("esriAttribution")[0];
-          if (attr) {
-            attr.parentNode.insertBefore(landsdlogo, attr.nextSibling);
+          {
+            //"opacity" : 0.5,
+            imageParameters: imageParameters,
+            maxScale: 25000
           }
-        });
-		}
-		);
-	
+        );
+
+        var bBldg = new ArcGISDynamicMapServiceLayer(
+          "https://api.hkmapservice.gov.hk/ags/map/layer/ib1000/buildings?key=" +
+            apikey,
+          {
+            imageParameters: imageParameters,
+            minScale: 15000
+          }
+        );
+
+        var bUtil = new ArcGISDynamicMapServiceLayer(
+          "https://api.hkmapservice.gov.hk/ags/map/layer/ib1000/utilities?key=" +
+            apikey,
+          {
+            imageParameters: imageParameters,
+            minScale: 5000
+          }
+        );
+
+        var bTspt = new ArcGISDynamicMapServiceLayer(
+          "https://api.hkmapservice.gov.hk/ags/map/layer/ib1000/transportation?key=" +
+            apikey,
+          {
+            imageParameters: imageParameters,
+            minScale: 25000
+          }
+        );
+
+        var b5kPOI = new ArcGISDynamicMapServiceLayer(
+          "https://api.hkmapservice.gov.hk/ags/map/layer/ib5000/poi?key=" +
+            apikey,
+          {
+            imageParameters: imageParameters,
+            minScale: 10000
+          }
+        );
+
+        var cLot = new ArcGISDynamicMapServiceLayer(
+          "https://api.hkmapservice.gov.hk/ags/map/layer/ic1000=" + apikey,
+          {
+            opacity: 0.5,
+            imageParameters: imageParameters,
+            minScale: 2500
+          }
+        );
+
+        _map.addLayer(bMi);
+        _map.addLayer(bBldg);
+        _map.addLayer(bUtil);
+        _map.addLayer(bTspt);
+        _map.addLayer(b5kPOI);
+        _map.addLayer(cLot);
+      });
     </script>
   </body>
 </html>
