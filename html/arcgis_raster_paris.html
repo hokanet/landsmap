@@ -1,0 +1,268 @@
+<!-- ArcGIS API for JavaScript Sample using Digital Topographic Map of Hong Kong API in Raster Tile Format
+Basemap: Colour Topographic Map API in Raster Tile Format
+PARIS layers: ArcGIS online with published feature services
+
+This JavaScript sample is built using ArcGIS API for JavaScript library. -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="initial-scale=1, maximum-scale=1,user-scalable=no"
+    />
+    <title>ArcGIS API v3.33 for JS in Raster Tile</title>
+
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/3.33/dijit/themes/nihilo/nihilo.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/3.33/esri/css/esri.css"
+    />
+
+    <style>
+      html,
+      body,
+      #map-area {
+/*         height: 100%;
+        width: 100%; */
+        margin: 2;
+        padding: 2;
+        font-family: sans-serif;
+      }
+
+      body {
+        position: relative;
+      }
+
+      .logo-med {
+        width: 46px;
+        height: 22px;
+        background-image: url(https://js.arcgis.com/3.33/esri/images/map/logo-sm.png);
+      }
+
+      #landsdlogo {
+        display: inline-block;
+        vertical-align: bottom;
+        width: 25px;
+        height: 25px;
+        background: url(https://mapapis01.blob.core.windows.net/images/landsdlogo.jpg);
+        background-repeat: no-repeat;
+        background-size: 25px 25px;
+      }
+
+      .esriAttribution {
+        background: transparent;
+      }
+
+      #coor {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        background-color: white;
+        padding: 2px;
+        border: 1px solid black;
+        font-size: 12px;
+        display: none;
+      }
+
+      #rightPane {
+        margin: 0;
+        padding: 10px;
+        background-color: #fff;
+        color: #421b14;
+        width: auto;
+        box-shadow: 1px 1px 10px #888888;
+        position: absolute;
+        right: 0px;
+        top: 0px;
+        height: auto;
+      }
+    </style>
+    <script src="https://js.arcgis.com/3.33/"></script>
+  </head>
+
+  <body class="nihilo">
+    <div id="mainWindow" style="width: 100%; height: 100%; margin: 0;">
+      <div id="map-area" class="shadow"></div>
+      <div id="landsdlogo" class="landsdlogo"></div>
+      <div id="rightPane">
+        <div id="layerToggle">PARIS Layers: <br /></div>
+      </div>
+    </div>
+
+    <script>
+      // resize map
+      const mapdiv = window["map-area"];
+      var margin;
+      if (document.all) {
+        margin =
+          parseInt(document.body.currentStyle.marginTop, 10) +
+          parseInt(document.body.currentStyle.marginBottom, 10);
+      } else {
+        margin =
+          parseInt(
+            document.defaultView
+              .getComputedStyle(document.body, "")
+              .getPropertyValue("margin-top")
+          ) +
+          parseInt(
+            document.defaultView
+              .getComputedStyle(document.body, "")
+              .getPropertyValue("margin-bottom")
+          );
+      }
+      mapdiv.style.height = window.innerHeight - margin + "px";
+
+/*       var basemapRTURL =
+        "https://api.hkmapservice.gov.hk/ags/map/basemap/WGS84";
+      var mapLabelRTUrl =
+        "https://api.hkmapservice.gov.hk/ags/map/label-en/WGS84"; */
+
+      /////
+      //API starter key
+      //var apikey = '584b2fa686f14ba283874318b3b8d6b0';
+      //landsd.azure-api.net starter key
+      //var apikey = "f4d3e21d4fc14954a1d5930d4dde3809";
+      //PlanD test key
+      var apikey = "a5ce32f456ad45db98ff08089fed7153";
+      require([
+        "esri/map",
+        //"esri/basemaps",
+        "esri/layers/ArcGISTiledMapServiceLayer",
+        "esri/layers/FeatureLayer",
+        "esri/geometry/Point",
+        "esri/SpatialReference",
+        "dojo/_base/array",
+        "dijit/form/CheckBox",
+        "dojo/dom",
+        "dojo/dom-construct",
+        "dojo/domReady!"
+      ], function (
+        Map,
+        //esriBasemaps,
+        ArcGISTiledMapServiceLayer,
+        FeatureLayer,
+        Point,
+        SpatialReference,
+        arrayUtils,
+        CheckBox,
+        dom,
+        domConstruct
+      ) {
+        XMLHttpRequest.prototype.openRaw = XMLHttpRequest.prototype.open;
+        XMLHttpRequest.prototype.open = function (method, url, asyn, usr, pwd) {
+          if (url.indexOf("ags/map") >= 0) {
+            if (url.indexOf("?") >= 0) url += "&key=" + apikey;
+            else url += "?key=" + apikey;
+          }
+          this.openRaw(method, url, asyn, usr, pwd);
+        };
+        /* esriBasemaps.LandsDRT80 = {
+          baseMapLayers: [
+            {
+              url: basemapRTURL + "?key=" + apikey
+            }
+          ]
+        }; */
+
+        var bLayer = new ArcGISTiledMapServiceLayer(
+          "https://api.hkmapservice.gov.hk/ags/map/basemap/HK80?key=" + apikey
+        );
+
+        var bLabelLayer = new ArcGISTiledMapServiceLayer(
+          "https://api.hkmapservice.gov.hk/ags/map/label-tc/HK80?key=" + apikey
+        );
+		
+        var map = new Map("map-area", {
+          center: new Point(
+            823100,
+            831200,
+            new SpatialReference({ wkid: 2326 })
+          ),
+          showAttribution: true,
+          zoom: 11,
+          minZoom: 10,
+          maxZoom: 20,
+          smartNavigation: false
+        });
+
+        map.addLayer(bLayer);
+        map.addLayer(bLabelLayer);
+
+        var layers = [];
+        arrayUtils.forEach(
+          [
+            {
+              url: "https://services7.arcgis.com/kY5IHUhasrPXUbDG/arcgis/rest/services/APPLICATION/FeatureServer/0",
+              id: "APPLICATION"
+            },
+            {
+              url: "https://services7.arcgis.com/kY5IHUhasrPXUbDG/arcgis/rest/services/AMENDMENT/FeatureServer/0",
+              id: "AMENDMENT"
+            },
+            {
+              url: "https://services7.arcgis.com/kY5IHUhasrPXUbDG/arcgis/rest/services/REPN/FeatureServer/0",
+              id: "REPN"
+            },
+            {
+              url: "https://services7.arcgis.com/kY5IHUhasrPXUbDG/arcgis/rest/services/FUR_REPN/FeatureServer/0",
+              id: "FUR-REPN"
+            }
+          ],
+
+          function (layer) {
+            map.addLayer(new FeatureLayer(layer.url,{"id":layer.id}));
+            layers.unshift(layer.id);
+          }
+        );
+
+        arrayUtils.forEach(layers, function(id) {
+					new CheckBox({
+						id: "cb_" + id,
+						name: "cb_" + id,
+						checked: false,
+            onChange: function(bool) {
+							bool ?
+							map.getLayer(this.id.split("_")[1]).show() :
+							map.getLayer(this.id.split("_")[1]).hide();
+						} 
+					}, 
+            domConstruct.create("input", {
+              id: "lyr_" + id
+            })
+          ).placeAt(dom.byId("layerToggle"));
+
+          map.getLayer(id).hide();
+
+          // create a label for the check box
+          var label = domConstruct.create("label", {
+            for: "cb_" + id,
+            innerHTML: id
+          });
+          domConstruct.place(label, dom.byId("layerToggle"));
+          domConstruct.place(
+            domConstruct.create("br"),
+            dom.byId("layerToggle")
+          );
+        });
+
+        map.on("mouse-move", function (eRT) {
+          if (!eRT.mapPoint) return;
+          var pt = eRT.mapPoint;
+          document.getElementById("coor").innerHTML =
+            "X: " + pt.x + " <br>Y: " + pt.y;
+        });
+
+        map.on("load", function (event) {
+          const attr = document.getElementsByClassName("esriAttribution")[0];
+          if (attr) {
+            attr.parentNode.insertBefore(landsdlogo, attr.nextSibling);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

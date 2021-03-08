@@ -11,8 +11,8 @@ This JavaScript sample is built using ArcGIS API for JavaScript library. -->
 
     <style>
       html,body,#map-area {
-        //height: 100%;
-        //width: 100%;
+        height: 100%;
+        width: 100%;
         margin: 2;
         padding: 2;
       }
@@ -31,13 +31,16 @@ This JavaScript sample is built using ArcGIS API for JavaScript library. -->
         background: transparent;
       }
     </style>
+    <script src="https://js.arcgis.com/3.33/"></script>
   </head>
 
-  <body>
-    <script src="https://js.arcgis.com/3.33/"></script>
+  <body class="nihilo">
+    <div id="mainWindow" style="width: 100%; height: 100%; margin: 0;">
     <div id="map-area"></div>
     <div id="landsdlogo" class="landsdlogo"></div>
+    </div>
 
+    <script src="https://js.arcgis.com/3.33/"></script>
     <script>
       // resize map
       const mapdiv = window["map-area"];
@@ -62,45 +65,35 @@ This JavaScript sample is built using ArcGIS API for JavaScript library. -->
       mapdiv.style.height = window.innerHeight - margin + "px";
 
       /////
-      var map;
+      //var _map;
       //API starter key
       //var apikey = '584b2fa686f14ba283874318b3b8d6b0';
       //landsd.azure-api.net starter key
       //var apikey = "f4d3e21d4fc14954a1d5930d4dde3809";
       //PlanD test key
       var apikey = "a5ce32f456ad45db98ff08089fed7153";
-	  
-	  var basemapRTURL = "https://api.hkmapservice.gov.hk/ags/map/basemap/HK80"
 
       require([
-        "dojo/dom",
-        "esri/layers/ArcGISTiledMapServiceLayer",
-		"esri/basemaps"
-        "esri/SpatialReference",
+				"dojo/dom",
+        "esri/layers/ArcGISTiledMapServiceLayer", 
+        "esri/SpatialReference", 
         "esri/geometry/Point",
-        "esri/map",
-        "dojo/_base/json",
-        "dojo/domReady!"
-      ], function (
+         "esri/map",
+         "dojo/domReady!"
+			], function(
         dom,
         ArcGISTiledMapServiceLayer,
-		basemap,
         SpatialReference,
         Point,
         Map
-      ) {
-   
-
+      ){
         var bLayer = new ArcGISTiledMapServiceLayer(
-          "https://api.hkmapservice.gov.hk/ags/map/basemap/HK80?key=" + apikey,
-          { showAttribution: true }
+          "https://api.hkmapservice.gov.hk/ags/map/basemap/HK80?key=" + apikey
         );
 
         var bLabelLayer = new ArcGISTiledMapServiceLayer(
           "https://api.hkmapservice.gov.hk/ags/map/label-tc/HK80?key=" + apikey
         );
-		
-		esriBasemaps.LandsDRT = {baseMapLayers: [{url: basemapRTURL + "/resources/styles/root.json",type: "VectorTile"}]
 		
         var _map = new Map("map-area", {
           center: new Point(
@@ -122,8 +115,9 @@ This JavaScript sample is built using ArcGIS API for JavaScript library. -->
           if (attr) {
             attr.parentNode.insertBefore(landsdlogo, attr.nextSibling);
           }
-        });
+        }); 
       });
     </script>
+    
   </body>
 </html>
